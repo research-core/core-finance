@@ -1,0 +1,57 @@
+<div style="background-color:#f5f5f5;margin:0px;padding:30px;font:Arial;font-family:Arial,Helvetica,Sans-serif" bgcolor="#f5f5f5">
+  <table width="800" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#fff" style="margin: auto auto;padding:0px;border-collapse:collapse; color:#002d40">
+    <tbody>
+      <tr>
+        <td width="800" cellpadding="0" cellspacing="0" border="" valign="top" style="padding:20px;margin:20px;border:0px;border-collapse:collapse;max-width:800px">
+          <span style="font-size:18px;line-height:22px;font-weight:bold; text-align:center;text-transform:uppercase;">
+            <span style="color:#66cccc">Data quality report</span>
+          </span>
+          <br/>
+          <br/>
+          <br/>
+          <p style="margin:0px;padding:0px">
+            This report was generated because some entries you introduced are either
+            incomplete or invalid. </br> Please take action on the items listed below.
+          </p>
+
+          {% if orders_missing_supplier %}
+          </br>
+          <h4>Orders missing Supplier</h4>
+          <p>Please fill in the Supplier field in the following entries:</p>
+          <table>
+            <tr>
+              <th>Link</th>
+              <th style="padding: 0 20px 0 20px">Req. number</th>
+              <th>Req. date</th>
+            </tr>
+            {% for order in orders_missing_supplier %}
+            <tr>
+              <td><a href="{{ base_url }}{{ order.get_absolute_url }}" target="_blank">view</a></td>
+              <td style="padding: 0 20px 0 20px">{{ order.order_reqnum }}</td>
+              <td>{{ order.order_reqdate }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+          {% endif %}
+
+          <p>Your contribute to the consistency of the CORE database is very important.</p>
+
+          <br/>
+          <br/>
+          <p style="margin:0px;padding:0px">
+            Thank you,
+            <br/>
+            <br/>
+            <img src='http://neuro.fchampalimaud.org/static/cnp.png' />
+          </p>
+          <br/>
+          <p style="margin:0px;padding:0px;color: red;font-size:11px;">
+            Please send an email to <a style="color:#66cccc; text-decoration:none;" href="mailto:software@research.fchampalimaud.org">
+      software@research.fchampalimaud.org
+    </a> if you are not entitled to see this message.
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

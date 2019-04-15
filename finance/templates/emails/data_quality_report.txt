@@ -1,0 +1,22 @@
+Data quality report
+===================
+
+This report was generated because some entries you introduced are either
+incomplete or invalid. Please take action on the items listed below.
+
+{% if orders_missing_supplier %}
+Orders missing a Supplier
+-------------------------
+
+Please fill in the Supplier field in the following entries:
+{% for order in orders_missing_supplier %}
+Link: {{ base_url }}{{ order.get_absolute_url }}{% endfor %}
+{% endif %}
+
+Your contribute to the consistency of the CORE database is very important.
+
+
+---
+Please send an email to
+software@research.fchampalimaud.org
+if you are not entitled to see this message.
