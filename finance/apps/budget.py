@@ -9,8 +9,8 @@ from pyforms_web.organizers import no_columns
 from pyforms_web.widgets.django import ModelAdminWidget
 from pyforms_web.widgets.django import ModelFormWidget
 
-from supplier.models import Budget
-from supplier.models import BudgetDoc
+from finance.models import Budget
+from finance.models import BudgetDoc
 
 
 class ImportBudgetFormWidget(ModelFormWidget):

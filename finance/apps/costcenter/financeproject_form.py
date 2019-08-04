@@ -2,7 +2,7 @@ from confapp import conf
 from pyforms.basewidget import segment
 from pyforms_web.widgets.django import ModelFormWidget
 
-from supplier.models import FinanceProject
+from finance.models import Project
 
 from .expensecode_list import ExpenseCodeListApp
 
@@ -11,7 +11,7 @@ class FinanceProjectFormApp(ModelFormWidget):
 
     TITLE = 'Finance project'
 
-    MODEL = FinanceProject
+    MODEL = Project
 
     INLINES = [ExpenseCodeListApp]
 

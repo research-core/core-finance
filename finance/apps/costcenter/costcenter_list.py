@@ -1,39 +1,51 @@
 from django.conf import settings
 
 from confapp import conf
+from pyforms.basewidget import segment
 from pyforms.controls import ControlCheckBox
 from pyforms_web.web.middleware import PyFormsMiddleware
 from pyforms_web.widgets.django import ModelAdminWidget
 
-from supplier.models import FinanceProject
+from finance.models import CostCenter
 
-from .financeproject_form import FinanceProjectFormApp
+from .financeproject_list import FinanceProjectListApp
 
 
-class FinanceProjectListApp(ModelAdminWidget):
+class CostCenterListApp(ModelAdminWidget):
 
-    TITLE = 'Finance projects'
+    TITLE = 'Cost Centers'
+    UID = 'cost-centers'
 
-    MODEL = FinanceProject
+    MODEL = CostCenter
 
-    AUTHORIZED_GROUPS = ['superuser', settings.PROFILE_LAB_ADMIN]
+    LIST_DISPLAY = ['costcenter_code', 'costcenter_name', 'start_date', 'end_date']
 
-    LIST_DISPLAY = [
-        'financeproject_code',
-        'financeproject_name',
-        'financeproject_startdate',
-        'financeproject_enddate',
-        # 'costcenter',
+    LIST_FILTER = ['group', 'financeproject__financeproject_code']
+
+    SEARCH_FIELDS = ['costcenter_name__icontains', 'costcenter_code__icontains']
+
+    INLINES = [FinanceProjectListApp]
+
+    FIELDSETS = [
+        segment(
+            'costcenter_name',
+            ('costcenter_code', 'start_date', 'end_date'),
+            'group',
+        ),
+        ' ',
+        'FinanceProjectListApp',
+        ' ',
     ]
-
-    ADDFORM_CLASS = FinanceProjectFormApp
-    EDITFORM_CLASS = FinanceProjectFormApp
-    USE_DETAILS_TO_EDIT = False
 
     # ORQUESTRA CONFIGURATION
     # =========================================================================
+    ORQUESTRA_MENU = 'left>FinancesDashboardWidget'
+    ORQUESTRA_MENU_ORDER = 10
+    ORQUESTRA_MENU_ICON = 'boxes'
     LAYOUT_POSITION = conf.ORQUESTRA_HOME
     # =========================================================================
+
+    AUTHORIZED_GROUPS = ['superuser', settings.PROFILE_LAB_ADMIN]
 
     def __init__(self, *args, **kwargs):
 
@@ -42,10 +54,15 @@ class FinanceProjectListApp(ModelAdminWidget):
             default=True,
             label_visible=False,
             changed_event=self.populate_list,
-            field_style='text-align:right;',
+            # field_style='text-align:right;',  # FIXME breaks form
         )
 
         super().__init__(*args, **kwargs)
+
+        # Edit filter label
+        self._list.custom_filter_labels = {
+            'financeproject__financeproject_code': 'Project Code',
+        }
 
     def get_toolbar_buttons(self, has_add_permission=False):
         return tuple(
@@ -60,12 +77,6 @@ class FinanceProjectListApp(ModelAdminWidget):
             qs = qs.active()
 
         return qs
-
-    def has_update_permissions(self, obj):
-        if obj and obj.financeproject_code == 'NO TRACK':
-            return False
-        else:
-            return True
 
     def has_remove_permissions(self, obj):
         """Only superusers may delete these objects."""

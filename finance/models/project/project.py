@@ -1,9 +1,7 @@
 from django.db import models
-from django.conf import settings
-
 from .project_queryset import ProjectQuerySet
 
-class FinanceProject(models.Model):
+class Project(models.Model):
     """
     Represents Project in the system
     """
@@ -20,8 +18,8 @@ class FinanceProject(models.Model):
     financeproject_funding     = models.DecimalField('Funding', blank=True, null=True,max_digits=11, decimal_places=2)  #: Funding amount of the grant
     financeproject_responsible = models.CharField('Responsible', max_length=200)  #: Responsible Name
 
-    costcenter = models.ForeignKey('FinanceCostCenter', verbose_name='Cost Center', on_delete=models.CASCADE)   #: Finance Cost Center is a Fk to that table
-    currency   = models.ForeignKey('Currency', verbose_name='Currency', blank=True, null=True, on_delete=models.CASCADE) #: Currency of the grant
+    costcenter = models.ForeignKey('CostCenter', verbose_name='Cost Center', on_delete=models.CASCADE)   #: Finance Cost Center is a Fk to that table
+    currency   = models.ForeignKey('common.Currency', verbose_name='Currency', blank=True, null=True, on_delete=models.CASCADE) #: Currency of the grant
     grant      = models.ForeignKey('Grant', verbose_name='Grant', blank=True, null=True, on_delete=models.CASCADE) #: Currency of the grant
 
     objects = ProjectQuerySet.as_manager()

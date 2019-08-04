@@ -1,11 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import Group
-from django.utils import timezone
-
-
 from .costcenter_queryset import CostCenterQuerySet
 
-class FinanceCostCenter(models.Model):
+
+class CostCenter(models.Model):
     """
     Represents a Finance cost center in the system
     Example: CCU
@@ -17,7 +14,7 @@ class FinanceCostCenter(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
 
-    group = models.ForeignKey(Group, verbose_name='Group', blank=False, null=False, on_delete=models.CASCADE) #: Research group use this project. is a Fk to the Group table
+    group = models.ForeignKey('auth.Group', verbose_name='Group', blank=False, null=False, on_delete=models.CASCADE) #: Research group use this project. is a Fk to the Group table
 
     objects = CostCenterQuerySet.as_manager()
 

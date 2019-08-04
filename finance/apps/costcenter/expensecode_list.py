@@ -5,7 +5,7 @@ from pyforms.basewidget import segment
 from pyforms_web.web.middleware import PyFormsMiddleware
 from pyforms_web.widgets.django import ModelAdminWidget
 
-from supplier.models import ExpenseCode
+from finance.models import ExpenseCode
 
 
 class ExpenseCodeListApp(ModelAdminWidget):

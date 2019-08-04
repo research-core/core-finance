@@ -1,19 +1,9 @@
-import urllib
 import xlrd
-
-from django.apps import apps
-from django.db import models
-from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.utils.html import format_html
+from django.db import models
 from django.utils.safestring import mark_safe
+from .budget import Budget
 
-try:
-    from django.urls import reverse
-except ImportError:
-    from django.core.urlresolvers import reverse
-
-from .finance_project.finance_project import FinanceProject
 
 
 def build_missing_related_object_message(model, obj_repr, msg='', *args, **kwargs):
@@ -57,22 +47,36 @@ def build_missing_related_object_message(model, obj_repr, msg='', *args, **kwarg
     link = f'<a href="{url}" target="_blank">Click to add</a>'
     return mark_safe(msg + ' ' + link)
 
-
-def year_validator(value):
-    if value < 2010 or value > 9999:
-        raise ValidationError('Invalid year')
-
-
 class BudgetDoc(models.Model):
+
     budgetdoc_id = models.AutoField(primary_key=True)
-    document = models.FileField(upload_to='documents/%Y/%m/%d')
-    year = models.IntegerField('Year', validators=[year_validator])
+    document     = models.FileField(upload_to='documents/%Y/%m/%d')
+    year         = models.IntegerField('Year')
 
     class Meta:
         verbose_name = 'Budget Document'
 
     def __str__(self):
         return self.document.name
+
+    def save(self):
+        super().save()
+
+        title = f'The following budgets for the year {self.year} were updated:'
+        entry_template = '<li>{}: new amount is {:.2f} \u20AC</li>'
+
+        update_report = title
+
+        for budget, amount in self.budgets_to_update:
+            budget.budget_amount = amount
+            budget.save()
+
+            update_report += entry_template.format(
+                budget.expensecode.abbrv, amount)
+
+        self.update_report = mark_safe(update_report)
+
+
 
     def clean(self):
         """
@@ -83,6 +87,10 @@ class BudgetDoc(models.Model):
         if not self.document:
             # skip file content validation if no file was selected
             return
+
+        from ..costcenter.costcenter import CostCenter
+        from ..project.project import Project
+        from ..project.expense_code import ExpenseCode
 
         budgets_to_update = []
         errors = []
@@ -142,10 +150,6 @@ class BudgetDoc(models.Model):
         #   3. expense code (required project)
         #   4. budget (requires expense code)
 
-        FinanceCostCenter = apps.get_model('finance', 'FinanceCostCenter')
-        FinanceProject = apps.get_model('finance', 'FinanceProject')
-        ExpenseCode = apps.get_model('finance', 'ExpenseCode')
-        # Budget = apps.get_model('finance', 'Budget')
 
         for row in range(2, worksheet.nrows):
             values = worksheet.row_values(row)
@@ -166,13 +170,13 @@ class BudgetDoc(models.Model):
             cost_center_code, cost_center_name = cost_center_raw.split(' - ', 1)
             cost_center_code = cost_center_code.zfill(7)
             try:
-                cost_center = FinanceCostCenter.objects.get(
+                cost_center = CostCenter.objects.get(
                     costcenter_code=cost_center_code,
                 )
-            except FinanceCostCenter.DoesNotExist:
+            except CostCenter.DoesNotExist:
                 errors.append(
                     build_missing_related_object_message(
-                        FinanceCostCenter,
+                        CostCenter,
                         cost_center_raw,
                         costcenter_code=cost_center_code,
                         costcenter_name=cost_center_name,
@@ -185,14 +189,14 @@ class BudgetDoc(models.Model):
             project_code, project_name = project_raw.split(' - ', 1)
             project_code = project_code.zfill(3)
             try:
-                project = FinanceProject.objects.get(
+                project = Project.objects.get(
                     financeproject_code=project_code,
                     costcenter=cost_center,
                 )
-            except FinanceProject.DoesNotExist:
+            except Project.DoesNotExist:
                 errors.append(
                     build_missing_related_object_message(
-                        FinanceProject,
+                        Project,
                         project_raw,
                         financeproject_code=project_code,
                         financeproject_name=project_name,
@@ -254,84 +258,3 @@ class BudgetDoc(models.Model):
 
         self.budgets_to_update = budgets_to_update
 
-    def save(self):
-        super().save()
-
-        title = f'The following budgets for the year {self.year} were updated:'
-        entry_template = '<li>{}: new amount is {:.2f} \u20AC</li>'
-
-        update_report = title
-
-        for budget, amount in self.budgets_to_update:
-            budget.budget_amount = amount
-            budget.save()
-
-            update_report += entry_template.format(
-                budget.expensecode.abbrv, amount)
-
-        self.update_report = mark_safe(update_report)
-
-
-class GroupBudget(models.Model):
-    """
-    Represents a Budget for a certain Group in the system
-    This table is a view in MySql and should'nt be considered as a table in the data base
-    This table is used only for reports presentation
-    """
-
-    costcenter_code = models.CharField('Costcenter Code', max_length=200)  #: Code
-    financeproject_code = models.CharField('Financeproject Code', max_length=200)    #: Number
-    expensecode_number = models.CharField('Expensecode Number', max_length=100) #: Name
-    costcenter_name  = models.CharField('Costcenter Name', max_length=200)  #: Name
-    financeproject_name = models.CharField('Financeproject Name', max_length=200) #: Name
-    expensecode_type = models.CharField('Expensecode Type', max_length=100) #: Type
-    budget_amount = models.DecimalField('Budgeted amount', max_digits=11, decimal_places=2)    #: Amount for that budget
-    group = models.ForeignKey(Group, verbose_name='Group', blank=False, null=False, on_delete=models.PROTECT) #: Research group use this project. is a Fk to the Group table
-    budget_year = models.IntegerField('Year', blank=True, null=True)  #: Budget year
-    orders_amount = models.IntegerField('Orders amount', blank=True, null=True)  #: Orders amount
-
-    def project_orders(self):
-        project = FinanceProject.objects.get( financeproject_code=self.financeproject_code,costcenter__costcenter_code=self.costcenter_code )
-        return format_html("<a href='/export/orders_from_project/%d/' >Project orders</a>" % project.pk)
-    project_orders.short_description = 'Finance project orders'
-    project_orders.allow_tags = True
-
-    def delete(self): pass
-
-    class Meta:
-        #ordering = ['budget_year']
-        verbose_name = "Group Budget Report"
-        verbose_name_plural = "Group Budget Reports"
-        #unique_together = (('budget_year','expensecode'),)
-        managed = False
-        app_label = 'finance'
-
-    def __str__(self):
-        return str(self.group)
-
-
-class Budget(models.Model):
-    """
-    Represents a Budgets in the system
-    """
-
-    budget_id = models.AutoField(primary_key=True)  #: ID
-    budget_amount = models.DecimalField('Amount (NET)', max_digits=11, decimal_places=2)    #: Amount for that budget                           #: First Name
-    budget_year = models.IntegerField('Year', blank=True, null=True)  #: Budget year
-
-    expensecode = models.ForeignKey('ExpenseCode', verbose_name='Expense Code', on_delete=models.CASCADE) #: projects that are related to this budget
-    #group = models.ForeignKey(Group, verbose_name='Group', on_delete=models.CASCADE) #: the group in the cnp that has this budget
-
-    class Meta:
-        verbose_name = "Budget"
-        verbose_name_plural = "Budgets"
-        unique_together = (('budget_year','expensecode'),)
-        #ordering = ['expensecode__financeproject__costcenter__costcenter_code', 'expensecode__financeproject__financeproject_code']
-        app_label = 'finance'
-
-    def amount(self):
-        return "{:,.2f}".format(self.budget_amount).replace(".","#").replace(",",".").replace("#",",")
-
-    def __str__(self):
-        #return str(self.budget_amount)
-        return self.amount()#return "$ %s" % intcomma(str(self.budget_amount))

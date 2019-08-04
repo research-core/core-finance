@@ -1,5 +1,5 @@
 from django.db import models
-from .finance_project.finance_project import FinanceProject
+from finance.models.project.project import Project
 
 
 class ExpenseCode(models.Model):
@@ -11,7 +11,7 @@ class ExpenseCode(models.Model):
     expensecode_number = models.CharField('ExpenseCode Number', max_length=100) #: Name
     expensecode_type = models.CharField('ExpenseCode Type', max_length=100) #: Type
 
-    financeproject = models.ForeignKey(FinanceProject, verbose_name='Finance Project', on_delete=models.CASCADE)
+    financeproject = models.ForeignKey(Project, verbose_name='Finance Project', on_delete=models.CASCADE)
 
     @staticmethod
     def autocomplete_search_fields():
