@@ -18,18 +18,18 @@ class CostCenterListApp(ModelAdminWidget):
 
     MODEL = CostCenter
 
-    LIST_DISPLAY = ['costcenter_code', 'costcenter_name', 'start_date', 'end_date']
+    LIST_DISPLAY = ['code', 'name', 'start_date', 'end_date']
 
-    LIST_FILTER = ['group', 'financeproject__financeproject_code']
+    LIST_FILTER = ['group', 'project__code']
 
-    SEARCH_FIELDS = ['costcenter_name__icontains', 'costcenter_code__icontains']
+    SEARCH_FIELDS = ['name__icontains', 'code__icontains']
 
     INLINES = [FinanceProjectListApp]
 
     FIELDSETS = [
         segment(
-            'costcenter_name',
-            ('costcenter_code', 'start_date', 'end_date'),
+            'name',
+            ('code', 'start_date', 'end_date'),
             'group',
         ),
         ' ',
@@ -61,7 +61,7 @@ class CostCenterListApp(ModelAdminWidget):
 
         # Edit filter label
         self._list.custom_filter_labels = {
-            'financeproject__financeproject_code': 'Project Code',
+            'project__code': 'Project Code',
         }
 
     def get_toolbar_buttons(self, has_add_permission=False):

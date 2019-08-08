@@ -1,4 +1,5 @@
-from supplier import views
+"""
+from finance import views
 try:
     # django 2.0
     from django.urls import path
@@ -14,3 +15,4 @@ urlpatterns = [
     path('finance/importbudgets/<str:docname>/', views.importbudgets,                    name='importbudgets'),
     path('export/orders_from_project/<int:project_id>/', views.orders_from_project),
 ]
+"""

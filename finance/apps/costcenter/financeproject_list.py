@@ -19,11 +19,10 @@ class FinanceProjectListApp(ModelAdminWidget):
     AUTHORIZED_GROUPS = ['superuser', settings.PROFILE_LAB_ADMIN]
 
     LIST_DISPLAY = [
-        'financeproject_code',
-        'financeproject_name',
-        'financeproject_startdate',
-        'financeproject_enddate',
-        # 'costcenter',
+        'code',
+        'name',
+        'start_date',
+        'end_date',
     ]
 
     ADDFORM_CLASS = FinanceProjectFormApp
@@ -62,7 +61,7 @@ class FinanceProjectListApp(ModelAdminWidget):
         return qs
 
     def has_update_permissions(self, obj):
-        if obj and obj.financeproject_code == 'NO TRACK':
+        if obj and obj.code == 'NO TRACK':
             return False
         else:
             return True

@@ -14,12 +14,12 @@ class ExpenseCodeListApp(ModelAdminWidget):
 
     MODEL = ExpenseCode
 
-    LIST_DISPLAY = ['expensecode_number', 'expensecode_type']
+    LIST_DISPLAY = ['number', 'type']
 
     FIELDSETS = [
         segment(
             # 'financeproject',  # not required if app used as Inline
-            ('expensecode_number', 'expensecode_type')
+            ('number', 'type')
         )
     ]
 

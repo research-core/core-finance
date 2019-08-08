@@ -18,9 +18,9 @@ class FinanceProjectFormApp(ModelFormWidget):
     FIELDSETS = [
         ('grant', 'currency'),
         segment(
-            ('financeproject_name', 'financeproject_code', 'financeproject_responsible'),
-            ('financeproject_startdate', 'financeproject_enddate', ' '),
-            ('financeproject_totalamount','financeproject_overheads', 'financeproject_funding'),
+            ('name', 'code', 'responsible'),
+            ('start_date', 'end_date', ' '),
+            ('total_amount', 'importoverheads', 'funding'),
         ),
         ' ',
         'ExpenseCodeListApp',
@@ -38,7 +38,7 @@ class FinanceProjectFormApp(ModelFormWidget):
         if obj is None:
             return ModelFormWidget.title.fget(self)
         else:
-            return "Proj: {0}".format(obj.financeproject_name)
+            return "Proj: {0}".format(obj.name)
 
     @title.setter
     def title(self, value):

@@ -78,7 +78,7 @@ class BudgetFormAdmin(ModelFormWidget):
 
     FIELDSETS = [
         'expensecode',
-        no_columns('budget_year', 'budget_amount'),
+        no_columns('year', 'amount'),
     ]
 
     AUTHORIZED_GROUPS = ['superuser']
@@ -86,22 +86,22 @@ class BudgetFormAdmin(ModelFormWidget):
 
 class BudgetAdminWidget(ModelAdminWidget):
 
-    UID = 'finance-Budget-app'.lower()
+    UID = 'budgets'
     MODEL = Budget
 
     TITLE = 'Budgets'
 
     LIST_DISPLAY = [
-        'budget_year',
-        'budget_amount',
+        'year',
+        'amount',
         'expensecode',
     ]
 
     LIST_FILTER = [
         'budget_year',
-        'expensecode__financeproject',
-        'expensecode__expensecode_number',
-        'expensecode__financeproject__costcenter',
+        'expensecode__project',
+        'expensecode__number',
+        'expensecode__project__costcenter',
     ]
 
     EDITFORM_CLASS = BudgetFormAdmin

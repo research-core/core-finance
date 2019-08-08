@@ -1,55 +1,47 @@
 from django.db import models
-from finance.models.project.project import Project
-
 
 class ExpenseCode(models.Model):
     """
     Represents a Budget of an order in the system
     """
 
-    expensecode_id = models.AutoField(primary_key=True)  #: Pk ID
-    expensecode_number = models.CharField('ExpenseCode Number', max_length=100) #: Name
-    expensecode_type = models.CharField('ExpenseCode Type', max_length=100) #: Type
+    number = models.CharField('ExpenseCode Number', max_length=100) #: Name
+    type = models.CharField('ExpenseCode Type', max_length=100) #: Type
 
-    financeproject = models.ForeignKey(Project, verbose_name='Finance Project', on_delete=models.CASCADE)
+    project = models.ForeignKey('finance.Project', verbose_name='Finance project', on_delete=models.CASCADE)
 
     @staticmethod
     def autocomplete_search_fields():
-        return ("expensecode_number",
-            'expensecode_type__icontains',
-            'financeproject__financeproject_name__icontains',
-            'financeproject__financeproject_code',
-            'financeproject__costcenter__costcenter_code',
-            'financeproject__costcenter__costcenter_name__icontains' )
+        return (
+            "number__icontains",
+            'type__icontains',
+            'project__name__icontains',
+            'project__code__icontains',
+            'project__costcenter__name__icontains'
+        )
 
 
     class Meta:
-        verbose_name = "Expense Code"
-        verbose_name_plural = "Expense Codes"
-        unique_together = ("expensecode_number", "financeproject")
-        app_label = 'finance'
-
-    """
-    def __str__(self):
-        return self.expensecode_number
-    """
+        verbose_name = "Expense code"
+        verbose_name_plural = "Expense codes"
+        unique_together = ("number", "project")
 
     def __str__(self):
-        return self.financeproject.costcenter.costcenter_code + "-" + \
-        self.financeproject.financeproject_code+"-"+ \
-        self.expensecode_number+": "+self.financeproject.costcenter.costcenter_name+"-"+ \
-        self.financeproject.financeproject_name+"-"+self.expensecode_type
+        return self.project.costcenter.code + "-" + \
+               self.project.code + "-" + \
+               self.number + ": " + self.project.costcenter.name + "-" + \
+               self.project.name + "-" + self.type
 
     def expensecode(self):
-        return str(self.financeproject.costcenter.costcenter_code + "-" + \
-        self.financeproject.financeproject_code+"-"+ \
-        self.expensecode_number+": "+self.financeproject.costcenter.costcenter_name+"-"+ \
-        self.financeproject.financeproject_name+"-"+self.expensecode_type )
+        return str(self.project.costcenter.code + "-" + \
+                   self.project.code + "-" + \
+                   self.number + ": " + self.project.costcenter.name + "-" + \
+                   self.project.name + "-" + self.type)
 
     @property
     def abbrv(self):
         """Returns a string with codes only, i.e. `CCCCCCC-PPP-EE`."""
-        cost_center = self.financeproject.costcenter.costcenter_code
-        project = self.financeproject.financeproject_code
-        expense_code = self.expensecode_number
+        cost_center = self.project.costcenter.code
+        project = self.project.code
+        expense_code = self.number
         return f'{cost_center}-{project}-{expense_code}'

@@ -7,8 +7,8 @@ class ProjectQuerySet(models.QuerySet):
     def active(self):
         now = timezone.now()
         return self.filter(
-            (Q(financeproject_startdate=None) & Q(financeproject_enddate=None)) |
-            (Q(financeproject_startdate__lte=now) and Q(financeproject_enddate=None)) |
-            (Q(financeproject_startdate=None) and Q(financeproject_enddate__gte=now)) |
-            (Q(financeproject_startdate__lte=now) and Q(financeproject_enddate__gte=now))
+            (Q(start_date=None) & Q(end_date=None)) |
+            (Q(start_date__lte=now) and Q(end_date=None)) |
+            (Q(start_date=None) and Q(end_date__gte=now)) |
+            (Q(start_date__lte=now) and Q(end_date__gte=now))
         )

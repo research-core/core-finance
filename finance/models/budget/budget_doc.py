@@ -1,8 +1,11 @@
+import urllib
+
 import xlrd
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .budget import Budget
+
 
 
 
@@ -47,14 +50,17 @@ def build_missing_related_object_message(model, obj_repr, msg='', *args, **kwarg
     link = f'<a href="{url}" target="_blank">Click to add</a>'
     return mark_safe(msg + ' ' + link)
 
+
+
+
+
 class BudgetDoc(models.Model):
 
-    budgetdoc_id = models.AutoField(primary_key=True)
-    document     = models.FileField(upload_to='documents/%Y/%m/%d')
-    year         = models.IntegerField('Year')
+    document = models.FileField(upload_to='documents/%Y/%m/%d')
+    year     = models.IntegerField('Year')
 
     class Meta:
-        verbose_name = 'Budget Document'
+        verbose_name = 'Budget document'
 
     def __str__(self):
         return self.document.name
@@ -88,9 +94,10 @@ class BudgetDoc(models.Model):
             # skip file content validation if no file was selected
             return
 
-        from ..costcenter.costcenter import CostCenter
-        from ..project.project import Project
-        from ..project.expense_code import ExpenseCode
+        from finance.models import Budget
+        from finance.models import CostCenter
+        from finance.models import Project
+        from finance.models import ExpenseCode
 
         budgets_to_update = []
         errors = []
