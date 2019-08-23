@@ -74,7 +74,7 @@ class BudgetDoc(models.Model):
         update_report = title
 
         for budget, amount in self.budgets_to_update:
-            budget.budget_amount = amount
+            budget.amount = amount
             budget.save()
 
             update_report += entry_template.format(
@@ -239,7 +239,7 @@ class BudgetDoc(models.Model):
             try:
                 budget = Budget.objects.get(
                     expensecode=expense_code,
-                    budget_year=self.year,
+                    year=self.year,
                 )
             except Budget.DoesNotExist:
                 errors.append(
@@ -249,8 +249,8 @@ class BudgetDoc(models.Model):
                         '{model._meta.verbose_name} for year {} with Expense Code {} does not exist',
                         self.year,
                         expense_code.abbrv,
-                        budget_year=self.year,
-                        budget_amount=amount,
+                        year=self.year,
+                        amount=amount,
                         expensecode=expense_code.pk,
                     )
                 )

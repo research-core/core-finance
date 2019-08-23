@@ -98,7 +98,7 @@ class BudgetAdminWidget(ModelAdminWidget):
     ]
 
     LIST_FILTER = [
-        'budget_year',
+        'year',
         'expensecode__project',
         'expensecode__number',
         'expensecode__project__costcenter',

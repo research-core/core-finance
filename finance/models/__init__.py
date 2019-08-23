@@ -1,6 +1,5 @@
 from .budget.budget import Budget
 from .budget.budget_doc import BudgetDoc
-from .budget.group_budget import GroupBudget
 
 from .grant.grant import Grant
 from .grant.financing_agency import FinancingAgency

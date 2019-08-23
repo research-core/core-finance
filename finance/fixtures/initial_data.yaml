@@ -1,0 +1,55 @@
+- model: finance.Grantdomain
+  pk: 1
+  fields:
+    domain: Private
+- model: finance.Grantdomain
+  pk: 2
+  fields:
+    domain: Public
+
+- model: finance.FinancingAgency
+  pk: 1
+  fields:
+    name: Fundação para a Ciência e Tecnologia
+
+- model: finance.Grant
+  pk: 1
+  fields:
+    name: Grant example
+    nationality: 1
+    domain: 1
+    grantor: 1
+
+- model: finance.CostCenter
+  pk: 1
+  fields:
+    name: Cost center example
+    code: CCEx
+    group: 1
+
+
+- model: finance.Project
+  pk: 1
+  fields:
+    name: Cost center example
+    code: CCEx
+    total_amount: 1000
+    overheads: 500
+    funding: 500
+    responsible: 1
+    costcenter: 1
+    grant: 1
+
+- model: finance.ExpenseCode
+  pk: 1
+  fields:
+    number: 01
+    type: Human resources
+    project: 1
+
+- model: finance.Budget
+  pk: 1
+  fields:
+    amount: 400
+    year: 2019
+    expensecode: 1

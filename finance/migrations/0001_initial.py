@@ -15,26 +15,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='GroupBudget',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('costcenter_code', models.CharField(max_length=200, verbose_name='Costcenter Code')),
-                ('financeproject_code', models.CharField(max_length=200, verbose_name='Financeproject Code')),
-                ('expensecode_number', models.CharField(max_length=100, verbose_name='Expensecode Number')),
-                ('costcenter_name', models.CharField(max_length=200, verbose_name='Costcenter Name')),
-                ('financeproject_name', models.CharField(max_length=200, verbose_name='Financeproject Name')),
-                ('expensecode_type', models.CharField(max_length=100, verbose_name='Expensecode Type')),
-                ('budget_amount', models.DecimalField(decimal_places=2, max_digits=11, verbose_name='Budgeted amount')),
-                ('budget_year', models.IntegerField(blank=True, null=True, verbose_name='Year')),
-                ('orders_amount', models.IntegerField(blank=True, null=True, verbose_name='Orders amount')),
-            ],
-            options={
-                'verbose_name': 'Group Budget Report',
-                'verbose_name_plural': 'Group Budget Reports',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='BudgetDoc',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
