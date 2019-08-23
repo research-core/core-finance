@@ -26,5 +26,6 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     license=license,
-    install_requires=['xlrd', 'openpyxl']
+    install_requires=['xlrd', 'openpyxl'],
+    package_data={ 'finance': ['fixtures/initial_data.yaml'] },
 )
