@@ -304,14 +304,14 @@ class Command(BaseCommand):
 
             try:
                 finance_project = FinanceProject.objects.get(
-                    financeproject_code=finance_project_code, costcenter=cost_center
+                    code=finance_project_code, costcenter=cost_center
                 )
             except FinanceProject.DoesNotExist:
                 raise CommandError("Invalid project code: %s" % finance_project_code)
 
             try:
                 expense_code = ExpenseCode.objects.get(
-                    expensecode_type=expense_code_type, financeproject=finance_project
+                    expensecode_type=expense_code_type, project=finance_project
                 )
             except ExpenseCode.DoesNotExist:
                 raise CommandError("Invalid expense code: %s" % expense_code_type)

@@ -197,7 +197,7 @@ class BudgetDoc(models.Model):
             project_code = project_code.zfill(3)
             try:
                 project = Project.objects.get(
-                    financeproject_code=project_code,
+                    code=project_code,
                     costcenter=cost_center,
                 )
             except Project.DoesNotExist:
@@ -205,8 +205,8 @@ class BudgetDoc(models.Model):
                     build_missing_related_object_message(
                         Project,
                         project_raw,
-                        financeproject_code=project_code,
-                        financeproject_name=project_name,
+                        code=project_code,
+                        name=project_name,
                         costcenter=cost_center.pk,
                     )
                 )
@@ -220,7 +220,7 @@ class BudgetDoc(models.Model):
                 expense_code = ExpenseCode.objects.get(
                     expensecode_number=expense_code_number,
                     expensecode_type=expense_code_name,
-                    financeproject=project,
+                    project=project,
                 )
             except ExpenseCode.DoesNotExist:
                 errors.append(
@@ -229,7 +229,7 @@ class BudgetDoc(models.Model):
                         expense_code_raw,
                         expensecode_number=expense_code_number,
                         expensecode_type=expense_code_name,
-                        financeproject=project.pk,
+                        project=project.pk,
                     )
                 )
                 continue

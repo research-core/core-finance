@@ -32,13 +32,13 @@ class ExpenseCodeListApp(ModelAdminWidget):
 
     def has_add_permissions(self):
         finance_project = self.parent_model.objects.get(pk=self.parent_pk)
-        if finance_project.financeproject_code == 'NO TRACK':
+        if finance_project.code == 'NO TRACK':
             return False
         else:
             return True
 
     def has_update_permissions(self, obj):
-        if obj and obj.financeproject.financeproject_code == 'NO TRACK':
+        if obj and obj.project.code == 'NO TRACK':
             return False
         else:
             return True
